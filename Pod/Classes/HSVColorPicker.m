@@ -305,6 +305,7 @@ static float const BOX_THICKNESS = 0.7f;
 
     layerHueCircle = [[HueCircleLayer alloc] init];
     layerHueCircle.frame = self.bounds;
+    layerHueCircle.contentsScale = [UIScreen mainScreen].scale;
     [layerHueCircle setNeedsDisplay];
     [self.layer addSublayer:layerHueCircle];
 
