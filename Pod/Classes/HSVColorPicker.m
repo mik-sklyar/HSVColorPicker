@@ -286,46 +286,53 @@ static float const BOX_THICKNESS = 0.7f;
     return sharedEAGLContext;
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-        self.opaque = NO;
-        self.color = [UIColor whiteColor];
-        
-        layerHueCircle = [[HueCircleLayer alloc] init];
-        layerHueCircle.frame = self.bounds;
-        [layerHueCircle setNeedsDisplay];
-        [self.layer addSublayer:layerHueCircle];
-        
-        layerSaturationBrightnessBox = [[SaturationBrightnessLayer alloc] initWithContext:[HSVColorPicker sharedEAGLContext]];
-        layerSaturationBrightnessBox.frame = self.bounds;
-        [layerSaturationBrightnessBox setNeedsDisplay];
-        [self.layer addSublayer:layerSaturationBrightnessBox];
-        
-        layerHueMarker = [[MarkerLayer alloc] init];
-        [layerHueMarker setNeedsDisplay];
-        [self.layer addSublayer:layerHueMarker];
-
-        layerSaturationBrightnessMarker = [[MarkerLayer alloc] init];
-        [layerSaturationBrightnessMarker setNeedsDisplay];
-        [self.layer addSublayer:layerSaturationBrightnessMarker];
-        
-        hueGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHue:)];
-        hueGestureRecognizer.allowableMovement = FLT_MAX;
-        hueGestureRecognizer.minimumPressDuration = 0.0f;
-        hueGestureRecognizer.delegate = self;
-        [self addGestureRecognizer:hueGestureRecognizer];
-        saturationBrightnessGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragSaturationBrightness:)];
-        saturationBrightnessGestureRecognizer.allowableMovement = FLT_MAX;
-        saturationBrightnessGestureRecognizer.minimumPressDuration = 0.0;
-        saturationBrightnessGestureRecognizer.delegate = self;
-        [self addGestureRecognizer:saturationBrightnessGestureRecognizer];
-        
-        self.subDivisions = 256;
-    }
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    [self innerInit];
     return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    [self innerInit];
+    return self;
+}
+
+- (void)innerInit {
+    // Initialization code
+    self.opaque = NO;
+    self.color = [UIColor whiteColor];
+
+    layerHueCircle = [[HueCircleLayer alloc] init];
+    layerHueCircle.frame = self.bounds;
+    [layerHueCircle setNeedsDisplay];
+    [self.layer addSublayer:layerHueCircle];
+
+    layerSaturationBrightnessBox = [[SaturationBrightnessLayer alloc] initWithContext:[HSVColorPicker sharedEAGLContext]];
+    layerSaturationBrightnessBox.frame = self.bounds;
+    [layerSaturationBrightnessBox setNeedsDisplay];
+    [self.layer addSublayer:layerSaturationBrightnessBox];
+
+    layerHueMarker = [[MarkerLayer alloc] init];
+    [layerHueMarker setNeedsDisplay];
+    [self.layer addSublayer:layerHueMarker];
+
+    layerSaturationBrightnessMarker = [[MarkerLayer alloc] init];
+    [layerSaturationBrightnessMarker setNeedsDisplay];
+    [self.layer addSublayer:layerSaturationBrightnessMarker];
+
+    hueGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHue:)];
+    hueGestureRecognizer.allowableMovement = FLT_MAX;
+    hueGestureRecognizer.minimumPressDuration = 0.0f;
+    hueGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:hueGestureRecognizer];
+    saturationBrightnessGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragSaturationBrightness:)];
+    saturationBrightnessGestureRecognizer.allowableMovement = FLT_MAX;
+    saturationBrightnessGestureRecognizer.minimumPressDuration = 0.0;
+    saturationBrightnessGestureRecognizer.delegate = self;
+    [self addGestureRecognizer:saturationBrightnessGestureRecognizer];
+
+    self.subDivisions = 256;
 }
 
 - (void)layoutSubviews
@@ -339,7 +346,7 @@ static float const BOX_THICKNESS = 0.7f;
     boxSize = sqrt(BOX_THICKNESS * radius * BOX_THICKNESS * radius / 2.0f) * 2.0f;
     center = CGPointMake(self.bounds.size.width / 2.0f, self.bounds.size.height / 2.0f);
 
-    layerHueCircle.frame = self.bounds;
+    layerHueCircle.frame = CGRectMake((self.bounds.size.width - resolution) / 2.0f, (self.bounds.size.height - resolution) / 2.0f, resolution, resolution);
     layerSaturationBrightnessBox.frame = CGRectMake((self.bounds.size.width - boxSize) / 2.0f, (self.bounds.size.height - boxSize) / 2.0f, boxSize, boxSize);
     layerHueMarker.frame = [self hueMarkerRect];
     layerSaturationBrightnessMarker.frame = [self saturationBrightnessMarkerRect];
